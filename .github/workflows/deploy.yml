@@ -20,7 +20,7 @@ jobs:
         run: npm install
 
       - name: Check Eleventy version
-        run: ./node_modules/.bin/eleventy --version
+        run: ls -la ./node_modules/.bin/eleventy
 
       - name: Build
         run: npm run build
