@@ -1,0 +1,144 @@
+/*
+Global style describing light and dark themes
+*/
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #1e1e1e;
+    color: #e0e0e0;
+    line-height: 1.6;
+}
+
+header {
+    background: #2c2c2c;
+    color: #e0e0e0;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    position: relative;
+}
+
+nav {
+    position: sticky;
+    top: 0;
+    background-color: #2c2c2c;
+    align-content: center;
+    height: 8vh;
+    z-index: 1000;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+    display: flex;
+    gap: 1rem;
+}
+
+nav a {
+    color: #ffd6a5;
+    text-decoration: none;
+    font-size: larger;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.9rem;
+    z-index: 1001;
+}
+
+main {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: #292929;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
+}
+
+h2 {
+    color: #ffd6a5;
+    border-bottom: 2px solid #444;
+    padding-bottom: 0.25rem;
+}
+
+footer {
+    text-align: center;
+    padding: 1rem;
+    background: #2a2a2a;
+    color: #aaa;
+}
+
+a {
+    color: #ffd6a5;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+#page-content {
+    padding: 15px;
+}
+
+/* Light theme overrides */
+body.light {
+    background: #f5f5f5;
+    color: #222;
+}
+
+body.light header {
+    background: #ffffff;
+    color: #222;
+    border-bottom: 1px solid #ddd;
+}
+
+body.light nav {
+    background-color: #ffffff;
+}
+
+body.light nav a {
+    color: #0077aa;
+}
+
+body.light main {
+    background: #ffffff;
+    color: #222;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+body.light h2 {
+    color: #0077aa;
+    border-bottom: 2px solid #ddd;
+}
+
+body.light footer {
+    background: #eeeeee;
+    color: #666;
+}
+
+body.light a {
+    color: #0077aa;
+}
+
+/*
+| Element                                 | Why Style Globally                           | Typical Properties to Set                                                                   |
+| --------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `body`                                  | Overall page background, font, base colors   | `font-family`, `font-size`, `line-height`, `color`, `background-color`, `margin`, `padding` |
+| `h1`–`h6`                               | Headings consistency (size, weight, spacing) | `font-weight`, `font-size`, `margin`, `line-height`, `color`                                |
+| `p`                                     | Paragraph text style and spacing             | `margin`, `line-height`, `color`                                                            |
+| `a`                                     | Links: color, hover effect, decoration       | `color`, `text-decoration`, `cursor`, `hover styles`                                        |
+| `ul`, `ol`                              | Lists (removing or styling bullets/numbers)  | `margin`, `padding`, `list-style`                                                           |
+| `img`                                   | Image responsiveness and spacing             | `max-width: 100%`, `height: auto`, `display: block`, `margin`                               |
+| `button`, `input`, `select`, `textarea` | Form elements consistent look and feel       | `font`, `border`, `padding`, `background`, `color`, `cursor`                                |
+| `blockquote`                            | Quoted text style                            | `border-left`, `margin`, `padding`, `color`, `font-style`                                   |
+| `code`, `pre`                           | Inline code or blocks                        | `font-family`, `background-color`, `padding`, `border-radius`                               |
+| `hr`                                    | Horizontal rule styling                      | `border`, `margin`                                                                          |
+
+*/

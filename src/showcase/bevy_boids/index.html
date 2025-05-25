@@ -1,0 +1,20 @@
+---
+layout: layout
+---
+
+<h1>
+    Boids sim
+</h1>
+
+<div id="bevy-container" style="margin: auto;">
+    <script type="module">
+        import init from "./BevyBoids.js";
+
+        init().finally(() => {
+            console.log("Bevy WASM module initialized");
+            let canvas = document.querySelector("canvas");
+            console.log("Canvas: ", canvas);
+            document.querySelector("#bevy-container").appendChild(canvas);
+        });
+    </script>
+</div>
