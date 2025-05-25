@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jack Kingham</title>
+    <link rel="stylesheet" href="/includes/style.css" />
+</head>
+
+<body class="dark">
+    <nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/bio">Bio</a></li>
+        <li><a href="/showcase">Showcase</a></li>
+        <li><a href="/notes">Notes</a></li>
+    </ul>
+    <div class="theme-toggle">
+        <label>
+            <input type="checkbox" id="theme-switch">
+            Light Mode
+        </label>
+    </div>
+    <script>
+        const switchToggle = document.getElementById('theme-switch');
+        const body = document.body;
+
+        switchToggle.addEventListener('change', () => {
+            body.classList.toggle('light');
+            body.classList.toggle('dark');
+        });
+    </script>
+</nav>
+    <div id="page-content">
+        
+<h1>
+    Notes landing page
+</h1>
+
+<p>
+    Notes on whatever I feel like writing about.
+</p>
+<p>
+    Probably organized into topics like Rust, algorithms, linear algebra, etc.
+</p>
+    </div>
+</body>
+
+</html>
