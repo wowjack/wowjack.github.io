@@ -17,9 +17,13 @@ jobs:
           node-version: 18
 
       - name: Install dependencies & build
-        run: |
-          npm install
-          npm run build
+        run: npm install
+
+      - name: Check Eleventy version
+        run: npx @11ty/eleventy --version
+
+      - name: Build
+        run: npm run build
 
       - name: Deploy to GitHub Pages
         run: |
