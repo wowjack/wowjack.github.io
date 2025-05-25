@@ -16,11 +16,10 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies & build
-        run: npm install
-
-      - name: Check Eleventy version
-        run: ls -la ./node_modules/.bin/eleventy
+      - name: Install dependencies
+        run: |
+          npm install
+          chmod a+x ./node_modules/.bin/eleventy
 
       - name: Build
         run: npm run build
