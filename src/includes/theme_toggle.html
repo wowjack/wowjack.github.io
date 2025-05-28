@@ -1,7 +1,7 @@
 <div class="theme-toggle">
     <label for="theme-select">Theme:</label>
     <select id="theme-select">
-        <option default value="dark">Dark</option>
+        <option value="dark">Dark</option>
         <option value="light">Light</option>
         <!-- <option value="solarized">Solarized</option> -->
         <!-- <option value="high-contrast">High Contrast</option> -->
@@ -9,7 +9,8 @@
     <script>
         const theme_select = document.getElementById('theme-select');
         const body = document.body;
-        let theme = localStorage.getItem("theme") ?? "dark";
+        let theme = localStorage.getItem("theme") || "dark";
+        theme_select.value = theme;
         const theme_list = ["dark", "light"];
         
         for(let t of theme_list) {
