@@ -5,19 +5,5 @@
         <li><a href="/showcase">Showcase</a></li>
         <li><a href="/notes">Notes</a></li>
     </ul>
-    <div class="theme-toggle">
-        <label>
-            <input type="checkbox" id="theme-switch">
-            Light Mode
-        </label>
-    </div>
-    <script>
-        const switchToggle = document.getElementById('theme-switch');
-        const body = document.body;
-
-        switchToggle.addEventListener('change', () => {
-            body.classList.toggle('light');
-            body.classList.toggle('dark');
-        });
-    </script>
+    {% include "theme_toggle.html" %}
 </nav>

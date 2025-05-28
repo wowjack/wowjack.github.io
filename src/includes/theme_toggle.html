@@ -1,0 +1,22 @@
+<div>
+    <div class="theme-toggle">
+        <label>
+            <input type="checkbox" id="theme-switch">
+            Light Mode
+        </label>
+    </div>
+    <script>
+        const switchToggle = document.getElementById('theme-switch');
+        const body = document.body;
+        switchToggle.addEventListener('change', () => {
+            body.classList.toggle('light');
+            body.classList.toggle('dark');
+
+            if (body.className === "light") {
+                localStorage.setItem("light-theme", "true");
+            } else {
+                localStorage.setItem("light-theme", "false");
+            }
+        });
+    </script>
+</div>
