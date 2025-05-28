@@ -1,0 +1,31 @@
+---
+layout: layout
+---
+
+<h1>
+    A* Pathfinding
+</h1>
+
+<div id="bevy-container" style="margin: auto;">
+    <script type="module">
+        import init from "./Pathfinding.js";
+
+        init().finally(() => {
+            console.log("Bevy WASM module initialized");
+            let canvas = document.querySelector("canvas");
+            console.log("Canvas: ", canvas);
+            document.querySelector("#bevy-container").appendChild(canvas);
+            
+            canvas.addEventListener("wheel", (e) => {
+               // Let the page scroll
+                if (e.deltaY !== 0) {
+                    window.scrollBy({
+                        top: e.deltaY,
+                        behavior: "auto"
+                    });
+                }
+                e.preventDefault(); 
+            });
+        });
+    </script>
+</div>

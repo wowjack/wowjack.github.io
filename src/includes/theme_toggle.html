@@ -1,22 +1,29 @@
-<div>
-    <div class="theme-toggle">
-        <label>
-            <input type="checkbox" id="theme-switch">
-            Light Mode
-        </label>
-    </div>
+<div class="theme-toggle">
+    <label for="theme-select">Theme:</label>
+    <select id="theme-select">
+        <option default value="dark">Dark</option>
+        <option value="light">Light</option>
+        <!-- <option value="solarized">Solarized</option> -->
+        <!-- <option value="high-contrast">High Contrast</option> -->
+    </select>
     <script>
-        const switchToggle = document.getElementById('theme-switch');
+        const theme_select = document.getElementById('theme-select');
         const body = document.body;
-        switchToggle.addEventListener('change', () => {
-            body.classList.toggle('light');
-            body.classList.toggle('dark');
+        let theme = localStorage.getItem("theme") ?? "dark";
+        const theme_list = ["dark", "light"];
+        
+        for(let t of theme_list) {
+            body.classList.remove(t);
+        }
+        body.classList.add(theme);
 
-            if (body.className === "light") {
-                localStorage.setItem("light-theme", "true");
-            } else {
-                localStorage.setItem("light-theme", "false");
+        theme_select.addEventListener('change', () => {
+            theme = theme_select.value;
+            for(let t of theme_list) {
+                body.classList.remove(t);
             }
+            body.classList.add(theme);
+            localStorage.setItem("theme", theme);
         });
     </script>
 </div>
