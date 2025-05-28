@@ -16,6 +16,7 @@
         <li><a href="/showcase">Showcase</a></li>
         <li><a href="/notes">Notes</a></li>
     </ul>
+    <div>
     <div class="theme-toggle">
         <label>
             <input type="checkbox" id="theme-switch">
@@ -25,12 +26,18 @@
     <script>
         const switchToggle = document.getElementById('theme-switch');
         const body = document.body;
-
         switchToggle.addEventListener('change', () => {
             body.classList.toggle('light');
             body.classList.toggle('dark');
+
+            if (body.className === "light") {
+                localStorage.setItem("light-theme", "true");
+            } else {
+                localStorage.setItem("light-theme", "false");
+            }
         });
     </script>
+</div>
 </nav>
     <div id="page-content">
         
@@ -44,5 +51,11 @@
 </p>
     </div>
 </body>
+
+<script>
+    if (localStorage.getItem("light-theme") === "true") {
+        document.querySelector("body.dark").setAttribute("class", "light");
+    }
+</script>
 
 </html>
