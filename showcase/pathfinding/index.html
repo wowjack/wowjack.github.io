@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jack Kingham</title>
+    <link rel="stylesheet" href="/includes/style.css" />
+</head>
+
+<body class="dark">
+    <nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/bio">Bio</a></li>
+        <li><a href="/showcase">Showcase</a></li>
+        <li><a href="/notes">Notes</a></li>
+    </ul>
+    <div class="theme-toggle">
+    <label for="theme-select">Theme:</label>
+    <select id="theme-select">
+        <option default value="dark">Dark</option>
+        <option value="light">Light</option>
+        <!-- <option value="solarized">Solarized</option> -->
+        <!-- <option value="high-contrast">High Contrast</option> -->
+    </select>
+    <script>
+        const theme_select = document.getElementById('theme-select');
+        const body = document.body;
+        let theme = localStorage.getItem("theme") ?? "dark";
+        const theme_list = ["dark", "light"];
+        
+        for(let t of theme_list) {
+            body.classList.remove(t);
+        }
+        body.classList.add(theme);
+
+        theme_select.addEventListener('change', () => {
+            theme = theme_select.value;
+            for(let t of theme_list) {
+                body.classList.remove(t);
+            }
+            body.classList.add(theme);
+            localStorage.setItem("theme", theme);
+        });
+    </script>
+</div>
+</nav>
+    <div id="page-content">
+        
+<h1>
+    A* Pathfinding
+</h1>
+
+<div id="bevy-container" style="margin: auto;">
+    <script type="module">
+        import init from "./Pathfinding.js";
+
+        init().finally(() => {
+            console.log("Bevy WASM module initialized");
+            let canvas = document.querySelector("canvas");
+            console.log("Canvas: ", canvas);
+            document.querySelector("#bevy-container").appendChild(canvas);
+            
+            canvas.addEventListener("wheel", (e) => {
+               // Let the page scroll
+                if (e.deltaY !== 0) {
+                    window.scrollBy({
+                        top: e.deltaY,
+                        behavior: "auto"
+                    });
+                }
+                e.preventDefault(); 
+            });
+        });
+    </script>
+</div>
+    </div>
+</body>
+
+<script>
+    if (localStorage.getItem("light-theme") === "true") {
+        document.querySelector("body.dark").setAttribute("class", "light");
+    }
+</script>
+
+</html>
