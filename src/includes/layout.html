@@ -10,15 +10,10 @@
 
 <body class="dark">
     {% include "navbar.html" %}
+
     <div id="page-content">
         {{ content }}
     </div>
 </body>
-
-<script>
-    if (localStorage.getItem("light-theme") === "true") {
-        document.querySelector("body.dark").setAttribute("class", "light");
-    }
-</script>
 
 </html>

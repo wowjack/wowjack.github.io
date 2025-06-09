@@ -11,6 +11,7 @@ module.exports = function(eleventyConfig) {
             input: "src",
             output: "_site", // Deploy workflow depends on this, so dont change without changing deploy.yml
             includes: "includes",
+            htmlTemplateEngine: "njk",
         }
     }
 };
