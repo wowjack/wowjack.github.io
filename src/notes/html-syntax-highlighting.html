@@ -1,0 +1,26 @@
+---
+layout: layout
+---
+
+<header>
+    Notes on syntax highlighting in html
+</header>
+
+<main>
+    <div>
+        <h2>Prism Download</h2>
+        <p>Downloaded prism <a href="https://prismjs.com/download#themes=prism&languages=markup+css+clike+javascript+bash+c+csharp+cpp+clojure+cmake+csv+dart+docker+elixir+elm+fsharp+fortran+git+go+haskell+java+json+json5+jsonp+julia+latex+makefile+markdown+markup-templating+objectivec+ocaml+perl+php+python+r+jsx+tsx+regex+ruby+rust+sql+swift+toml+typescript+wasm+yaml+zig&plugins=line-numbers+file-highlight+show-language+toolbar+copy-to-clipboard">here</a></p>
+    </div>
+
+    <div>
+        <h2>Theme Switch</h2>
+        <p>
+            Prism provides different css files for different themes.
+            I handle this by loading both light and dark css files and dynamically disabling/enabling them depending on the page theme.
+        </p>
+        <pre><code class="language-js">let test = 0;</code></pre>
+
+        <h3>Notes</h3>
+        <p>The js file that prism requires is the same across themes (aside from the link in the comment at the top of the file).</p>
+    </div>
+</main>

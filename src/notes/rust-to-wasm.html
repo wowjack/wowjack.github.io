@@ -1,0 +1,59 @@
+---
+layout: layout
+---
+
+<header>
+    Notes on compiling Rust projects to WASM.
+</header>
+
+<main>
+    <div>
+        <h2>1 Setup</h2>
+        <p>
+            Make sure the wasm build target is installed.
+            This can automatically be installed using the <a href="#rust-toolchain-notes">rust-toolchain.toml</a> file detailed below.
+            Otherwise it should be manually installed using:
+        </p>
+        <pre><code class="language-bash">rustup target install wasm32-unknown-unknown</code></pre>
+        <p>
+            We also need some way to generate the js bindings for interacting with the wasm file.
+            The easiest way to do this is with wasm-bindgen
+        </p>
+        <pre class="language-bash">$ cargo install wasm-bindgen-cli</pre>
+    </div>
+
+
+    <div>
+        <h2>2 Build</h2>
+        <p>Build the project</p>
+        <pre class="language-bash">cargo build --release --target wasm32-unknown-unknown</pre>
+    </div>
+
+    <div>
+        <h2>3 Generate JS Bindings</h2>
+        <p>
+            We still need to generate the js bindings to load and interact with the wasm file.
+            The easiest way to do this is using wasm-bindgen
+        </p>
+        <pre class="language-bash">wasm-bindgen [[wasm-file]] --out-dir [[bindings-dir]]</pre>
+    </div>
+
+
+    <div>
+        <h2>4 Notes</h2>
+
+        <div>
+            <h3>4.1 rust-toolchain.toml</h3>
+            <p id="rust-toolchain-notes">
+                Its usually worth specifying a `rust-toolchain.toml` file pinning the channel to a specific version.
+                This avoids future issues with wasm-bindgen and other crate compatibility. 
+            </p>
+            <pre><code class="language-toml">
+[toolchain]
+channel = "stable"
+targets = ["wasm32-unknown-unknown"]
+            </code></pre>
+        </div>
+    </div>
+
+</main>

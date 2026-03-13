@@ -53,7 +53,7 @@ nav a {
 }
 
 main {
-    max-width: 800px;
+    width: 50vw;
     margin: 2rem auto;
     padding: 1rem;
     background: #292929;
@@ -61,7 +61,7 @@ main {
     box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
 }
 
-h2 {
+h2, h3 {
     color: #ffd6a5;
     border-bottom: 2px solid #444;
     padding-bottom: 0.25rem;
@@ -85,6 +85,7 @@ a:hover {
 
 #page-content {
     padding: 15px;
+    width: 100vw;
 }
 
 /* Light theme overrides */
@@ -113,7 +114,7 @@ body.light main {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-body.light h2 {
+body.light h2, body.light h3 {
     color: #0077aa;
     border-bottom: 2px solid #ddd;
 }
@@ -126,6 +127,7 @@ body.light footer {
 body.light a {
     color: #0077aa;
 }
+
 
 /*
 | Element                                 | Why Style Globally                           | Typical Properties to Set                                                                   |

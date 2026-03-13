@@ -5,7 +5,6 @@ module.exports = function(eleventyConfig) {
     eleventyConfig.addPassthroughCopy("src/**/*.png");
     eleventyConfig.addPassthroughCopy("src/**/*.ttf");
 
-
     return {
         dir: {
             input: "src",
@@ -15,3 +14,5 @@ module.exports = function(eleventyConfig) {
         }
     }
 };
+
+
