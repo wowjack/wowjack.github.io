@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jack Kingham</title>
+    <link rel="stylesheet" href="/includes/style.css" />
+
+    <!-- Syntax highlighting -->
+    <link rel="stylesheet" href="/includes/prism/prism-light.css" id="prism-light-css" disabled/>
+    <link rel="stylesheet" href="/includes/prism/prism-dark.css" id="prism-dark-css" disabled/>
+    <script src="/includes/prism/prism.js"></script>
+</head>
+
+<body class="dark">
+    <nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/bio">Bio</a></li>
+        <li><a href="/showcase">Showcase</a></li>
+        <li><a href="/notes">Notes</a></li>
+    </ul>
+    <div class="theme-toggle">
+    <label for="theme-select">Theme:</label>
+    <select id="theme-select">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <!-- <option value="solarized">Solarized</option> -->
+        <!-- <option value="high-contrast">High Contrast</option> -->
+    </select>
+    <script>
+        const theme_select = document.getElementById('theme-select');
+        const body = document.body;
+        let theme = localStorage.getItem("theme") || "dark";
+        theme_select.value = theme;
+        const theme_list = ["dark", "light"];
+        
+        // Change body class to theme
+        for(let t of theme_list) {
+            body.classList.remove(t);
+        }
+        body.classList.add(theme);
+
+        // Enable or disable relevant prism css file
+        let prism_dark = document.getElementById("prism-dark-css");
+        let prism_light = document.getElementById("prism-light-css");
+        prism_dark.disabled = (theme !== "dark")
+        prism_light.disabled = (theme !== "light")
+
+        theme_select.addEventListener('change', () => {
+            theme = theme_select.value;
+            for(let t of theme_list) {
+                body.classList.remove(t);
+            }
+            body.classList.add(theme);
+
+            prism_dark.disabled = (theme !== "dark")
+            prism_light.disabled = (theme !== "light")
+
+            localStorage.setItem("theme", theme);
+        });
+    </script>
+</div>
+</nav>
+
+    <div id="page-content">
+        <header>
+    Notes on setting up a Windows 10 VM with GPU passthrough using QEMU/KVM and libvirt.
+</header>
+
+<main>
+    <div>
+        <h2>Prerequisite Changes</h2>
+        <div>
+            <h3>1 Enable IOMMU and AMD SVM</h3>
+            <p>
+                Enable both IOMMU and AMD SVM in your BIOS settings.
+            </p>
+        </div>
+        <div>
+            <h3>2 Collect Device IDs</h3>
+            <p>
+                Get device IDs for the passthrough GPU and anything else in the same IOMMU group.
+                PCI bus devices do not count.
+            </p>
+        </div>
+        <div>
+            <h3>3 /etc/default/grub</h3>
+            <p>
+                Make sure the kernel recognizes IOMMU is enabled.
+                Add device IDs to the vfio-pci module.
+            </p>
+            <p>
+                Add to <code>GRUB_CMDLINE_LINUX_DEFAULT</code>:
+            </p>
+            <pre><code class="language-bash">
+# /etc/default/grub
+
+amd_iommu=on iommu=pt vfio-pci.ids=[[gpu device ids]]
+            </code></pre>
+        </div>
+        <div>
+            <h3>4 Include vfio Modules in initramfs</h3>
+            <p>
+                Make sure the vfio, vfio_iommu_type1, and vfio_pci modules are loaded.
+            </p>
+            <pre><code class="language-bash">
+# /etc/initramfs-tools/modules
+
+vfio
+vfio_iommu_type1
+vfio_pci
+            </code></pre>
+        </div>
+        <div>
+            <h3>5 Load vfio Modules at Boot</h3>
+            <p>
+                Make sure the vfio, vfio_iommu_type1, and vfio_pci modules are loaded.
+                This may be redundant given the previous section, but it doesn't hurt to include.
+                The important thing is that the vfio-pci driver attaches to the GPU devices before other drivers.
+            </p>
+            <pre><code class="language-bash">
+# /etc/modules-load.d/vfio.conf
+
+vfio
+vfio_iommu_type1
+vfio_pci
+            </code></pre>
+        </div>
+        <div>
+            <h3>6 Change QEMU Config</h3>
+            <p>
+                Uncomment the relevant lines and populate with relevant info.
+            </p>
+            <pre><code class="language-bash">
+# /etc/libvirt/qemu.conf
+
+user = "jack"
+group = "kvm"
+cgroup_device_acl = [
+    [[evdev input devices]]
+    ...
+]
+            </code></pre>
+        </div>
+        <div>
+            <h3>7 Scream</h3>
+            <p>
+                Download and build scream, then move the binary to <code>/usr/bin/scream</code>.
+            </p>
+            <p>
+                Create a systemd scream user service:
+            </p>
+            <pre><code class="language-ini">
+# ~/.config/systemd/user/scream.service
+
+[Unit]
+Description=Scream Audio Receiver for win10 VM
+After=pulseaudio.service pipewire.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/scream -i virbr0
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+            </code></pre>
+            <p>
+                Enable the service:
+            </p>
+            <pre><code class="language-bash">systemctl --user enable scream.service</code></pre>
+            <p>
+                Create a libvirt hook to start and stop the service:
+            </p>
+            <pre><code class="language-bash">
+# /etc/libvirt/hooks/qemu
+
+#!/bin/bash
+
+TARGET_VM="win10"
+USER_NAME="jack"
+USER_UID="1000"
+
+OBJECT="$1"
+OPERATION="$2"
+
+if [ "$OBJECT" == "$TARGET_VM" ]; then
+    if [ "$OPERATION" == "prepare" ] || [ "$OPERATION" == "start" ]; then
+        sudo -u "$USER_NAME" XDG_RUNTIME_DIR=/run/user/"$USER_UID" systemctl --user start scream.service
+    elif [ "$OPERATION" == "stopped" ] || [ "$OPERATION" == "release" ]; then
+        sudo -u "$USER_NAME" XDG_RUNTIME_DIR=/run/user/"$USER_UID" systemctl --user stop scream.service
+    fi
+fi
+            </code></pre>
+        </div>
+    </div>
+    <div>
+        <h2>VM Setup Steps</h2>
+        <div>
+            <h3>1 UEFI OVMF Firmware</h3>
+            <p>
+                Select UEFI OVMF firmware for the VM.
+            </p>
+        </div>
+        <div>
+            <h3>2 Enable SATA CDROM ISO Boot Device</h3>
+            <p>
+                Add a SATA CDROM device with the Windows ISO as a boot device.
+            </p>
+        </div>
+        <div>
+            <h3>3 Change Disk to virtio</h3>
+            <p>
+                Change the disk bus type to virtio for better performance.
+            </p>
+        </div>
+        <div>
+            <h3>4 Disable Network Interface and Change to virtio</h3>
+            <p>
+                Disable the network interface for now and change its type to virtio.
+            </p>
+        </div>
+        <div>
+            <h3>5 Add Hardware: virtio-win SATA CDROM</h3>
+            <p>
+                Add a second SATA CDROM device with the virtio-win drivers ISO.
+            </p>
+        </div>
+        <div>
+            <h3>6 Add Hardware: GPU and Audio PCI Devices</h3>
+            <p>
+                Add the GPU and its associated audio PCI devices as host devices.
+            </p>
+        </div>
+        <div>
+            <h3>7 Hide Virtualization</h3>
+            <p>
+                Prevent the guest from detecting it is running in a VM.
+            </p>
+            <p>
+                Under hyperv features:
+            </p>
+            <pre><code class="language-xml">
+&lt;vendor_id state="on" value="1234567890ab"/&gt;
+            </code></pre>
+            <p>
+                Under features:
+            </p>
+            <pre><code class="language-xml">
+&lt;kvm&gt;
+    &lt;hidden state="on"/&gt;
+&lt;/kvm&gt;
+            </code></pre>
+        </div>
+        <div>
+            <h3>8 Add vBIOS ROM</h3>
+            <p>
+                This goes under the hostdev tag (not source) where the source refers to the GPU device specifically.
+            </p>
+            <pre><code class="language-xml">
+&lt;rom bar="on" file="/usr/share/vgabios/gpu.rom"/&gt;
+            </code></pre>
+        </div>
+        <div>
+            <h3>9 Set Up evdev Inputs</h3>
+            <p>
+                Add the domain namespace header:
+            </p>
+            <pre><code class="language-xml">
+&lt;domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm"&gt;
+            </code></pre>
+            <p>
+                Add QEMU commandline arguments:
+            </p>
+            <pre><code class="language-xml">
+&lt;qemu:commandline&gt;
+    &lt;qemu:arg value="-object"/&gt;
+    &lt;qemu:arg value="input-linux,id=mouse1,evdev=/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse"/&gt;
+    &lt;qemu:arg value="-object"/&gt;
+    &lt;qemu:arg value="input-linux,id=kbd1,evdev=/dev/input/by-id/usb-Keychron_Keychron_K3-event-kbd,grab_all=on,repeat=on"/&gt;
+&lt;/qemu:commandline&gt;
+            </code></pre>
+            <p>
+                Add evdev input devices:
+            </p>
+            <pre><code class="language-xml">
+&lt;input type="evdev"&gt;
+    &lt;source dev="/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse"/&gt;
+&lt;/input&gt;
+&lt;input type="evdev"&gt;
+    &lt;source dev="/dev/input/by-id/usb-Keychron_Keychron_K3-event-kbd" grab="all" grabToggle="ctrl-ctrl" repeat="on"/&gt;
+&lt;/input&gt;
+            </code></pre>
+        </div>
+        <div>
+            <h3>10 CPU Performance Improvements</h3>
+            <p>
+                Pin CPU cores and explicitly specify the topology.
+            </p>
+            <pre><code class="language-xml">
+&lt;vcpu placement="static"&gt;12&lt;/vcpu&gt;
+&lt;cputune&gt;
+    &lt;vcpupin vcpu="0" cpuset="6"/&gt;
+    &lt;vcpupin vcpu="1" cpuset="18"/&gt;
+    &lt;vcpupin vcpu="2" cpuset="7"/&gt;
+    &lt;vcpupin vcpu="3" cpuset="19"/&gt;
+    &lt;vcpupin vcpu="4" cpuset="8"/&gt;
+    &lt;vcpupin vcpu="5" cpuset="20"/&gt;
+    &lt;vcpupin vcpu="6" cpuset="9"/&gt;
+    &lt;vcpupin vcpu="7" cpuset="21"/&gt;
+    &lt;vcpupin vcpu="8" cpuset="10"/&gt;
+    &lt;vcpupin vcpu="9" cpuset="22"/&gt;
+    &lt;vcpupin vcpu="10" cpuset="11"/&gt;
+    &lt;vcpupin vcpu="11" cpuset="23"/&gt;
+&lt;/cputune&gt;
+            </code></pre>
+            <pre><code class="language-xml">
+&lt;cpu mode="host-passthrough" check="none" migratable="on"&gt;
+    &lt;topology sockets="1" dies="1" clusters="1" cores="6" threads="2"/&gt;
+&lt;/cpu&gt;
+            </code></pre>
+        </div>
+        <div>
+            <h3>11 Remove Tablet Device</h3>
+            <p>
+                Remove the tablet device. It messes with evdev inputs.
+            </p>
+        </div>
+        <div>
+            <h3>12 Boot and Install</h3>
+            <p>
+                Boot the VM and install Windows.
+            </p>
+        </div>
+        <div>
+            <h3>13 Install virtio-win Drivers</h3>
+            <p>
+                Install the virtio-win drivers from the CDROM.
+                Do NOT install guest tools. It breaks the pointer when attempting to install AMD drivers.
+            </p>
+        </div>
+        <div>
+            <h3>14 Update Windows</h3>
+            <p>
+                Make sure to enable the network device to download the update.
+                This can be done on the fly while the VM is running.
+            </p>
+        </div>
+        <div>
+            <h3>15 Install AMD Drivers</h3>
+            <p>
+                Driver only, no CPU chipset.
+            </p>
+        </div>
+        <div>
+            <h3>16 Make Monitor the Main Display</h3>
+            <p>
+                Set the passthrough monitor as the primary display.
+            </p>
+        </div>
+        <div>
+            <h3>17 Remove Display Spice and Video QXL</h3>
+            <p>
+                Removing the Windows and virtio-win CDROM devices seems to break 1440p 144Hz monitors.
+                It can cause an error saying the timing isn't supported by the display.
+                This can be fixed by connecting to a second monitor, changing the display refresh rate to 144Hz,
+                then reconnecting to the main monitor.
+            </p>
+        </div>
+        <div>
+            <h3>18 Scream</h3>
+            <p>
+                Download and install the scream driver in the Windows guest.
+            </p>
+        </div>
+    </div>
+</main>
+    </div>
+</body>
+
+</html>

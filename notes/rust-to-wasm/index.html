@@ -109,8 +109,9 @@
         <div>
             <h3>4.1 rust-toolchain.toml</h3>
             <p id="rust-toolchain-notes">
-                Its usually worth specifying a `rust-toolchain.toml` file pinning the channel to a specific version.
-                This avoids future issues with wasm-bindgen and other crate compatibility. 
+                Its usually worth specifying a rust-toolchain.toml file pinning the channel to a specific version.
+                This avoids future issues with wasm-bindgen and other crate compatibility.
+                This file exists in the root of your rust project, in the same directory as Cargo.toml 
             </p>
             <pre><code class="language-toml">
 [toolchain]
