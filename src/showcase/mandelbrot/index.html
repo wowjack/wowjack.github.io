@@ -1,0 +1,29 @@
+---
+layout: layout
+---
+
+<h1>
+    Boids sim 
+</h1>
+
+<div id="bevy-container" style="margin: auto;">
+    <script type="module">
+        import init from "./mandelbrot_bevy.js";
+
+        init().finally(() => {
+            console.log("Bevy WASM module initialized");
+            //let canvas = document.querySelector("canvas");
+            //console.log("Canvas: ", canvas);
+            //document.querySelector("#bevy-container").appendChild(canvas);
+            
+        });
+    </script>
+    <style>
+        #canvas {
+            width: 100%;
+            height: 80vh;
+            margin: auto;
+        }
+    </style>
+
+</div>
