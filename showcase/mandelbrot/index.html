@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jack Kingham</title>
+    <link rel="stylesheet" href="/includes/style.css" />
+
+    <!-- Syntax highlighting -->
+    <link rel="stylesheet" href="/includes/prism/prism-light.css" id="prism-light-css" disabled/>
+    <link rel="stylesheet" href="/includes/prism/prism-dark.css" id="prism-dark-css" disabled/>
+    <script src="/includes/prism/prism.js"></script>
+</head>
+
+<body class="dark">
+    <nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/bio">Bio</a></li>
+        <li><a href="/showcase">Showcase</a></li>
+        <li><a href="/notes">Notes</a></li>
+    </ul>
+    <div class="theme-toggle">
+    <label for="theme-select">Theme:</label>
+    <select id="theme-select">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <!-- <option value="solarized">Solarized</option> -->
+        <!-- <option value="high-contrast">High Contrast</option> -->
+    </select>
+    <script>
+        const theme_select = document.getElementById('theme-select');
+        const body = document.body;
+        let theme = localStorage.getItem("theme") || "dark";
+        theme_select.value = theme;
+        const theme_list = ["dark", "light"];
+        
+        // Change body class to theme
+        for(let t of theme_list) {
+            body.classList.remove(t);
+        }
+        body.classList.add(theme);
+
+        // Enable or disable relevant prism css file
+        let prism_dark = document.getElementById("prism-dark-css");
+        let prism_light = document.getElementById("prism-light-css");
+        prism_dark.disabled = (theme !== "dark")
+        prism_light.disabled = (theme !== "light")
+
+        theme_select.addEventListener('change', () => {
+            theme = theme_select.value;
+            for(let t of theme_list) {
+                body.classList.remove(t);
+            }
+            body.classList.add(theme);
+
+            prism_dark.disabled = (theme !== "dark")
+            prism_light.disabled = (theme !== "light")
+
+            localStorage.setItem("theme", theme);
+        });
+    </script>
+</div>
+</nav>
+
+    <div id="page-content">
+        
+<h1>
+    Boids sim 
+</h1>
+
+<div id="bevy-container" style="margin: auto;">
+    <script type="module">
+        import init from "./mandelbrot_bevy.js";
+
+        init().finally(() => {
+            console.log("Bevy WASM module initialized");
+            //let canvas = document.querySelector("canvas");
+            //console.log("Canvas: ", canvas);
+            //document.querySelector("#bevy-container").appendChild(canvas);
+            
+        });
+    </script>
+    <style>
+        #canvas {
+            width: 100%;
+            height: 80vh;
+            margin: auto;
+        }
+    </style>
+
+</div>
+    </div>
+</body>
+
+</html>
