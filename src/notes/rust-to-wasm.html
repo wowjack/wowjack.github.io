@@ -26,7 +26,7 @@ layout: layout
     <div>
         <h2>2 Build</h2>
         <p>Build the project</p>
-        <pre class="language-bash">cargo build --release --target wasm32-unknown-unknown</pre>
+        <pre><code class="language-bash">cargo build --release --target wasm32-unknown-unknown</code></pre>
     </div>
 
     <div>
@@ -35,12 +35,28 @@ layout: layout
             We still need to generate the js bindings to load and interact with the wasm file.
             The easiest way to do this is using wasm-bindgen
         </p>
-        <pre class="language-bash">wasm-bindgen [[wasm-file]] --out-dir [[bindings-dir]] --target web</pre>
+        <pre><code class="language-bash">wasm-bindgen [[wasm-file]] --out-dir [[bindings-dir]] --target web</code></pre>
+    </div>
+
+    <div>
+        <h2>4 Run</h2>
+        <p>Load and run the project on the webpage.</p>
+        <p>wasm-bindgen produces a number of files in the output bindings dir, of which [[project name]]_bg.wasm and [[project name]].js are most important.</p>
+        <p>All we need to do is create a simple js module script to load and run the wasm file.</p>
+        <pre><code class="language-js">
+import init from "[[project name]].js";
+
+init().finally(() => {
+    console.log("wasm file loaded and running.");
+});
+        </code></pre>
+
+        <p>The above process is only for executable crates. Library crates can be made to be expose specific functions using the wasm-bindgen crate.</p>
     </div>
 
 
     <div>
-        <h2>4 Notes</h2>
+        <h2>5 Notes</h2>
 
         <div>
             <h3>4.1 rust-toolchain.toml</h3>
